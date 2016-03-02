@@ -21,15 +21,14 @@ end
 
 
 def checkDomainInfo(domain)
-	allIpAddresses = `host #{domain}  | awk '/has address/ { print $4 }'`
+	allIpAddresses = `ping -c 1 #{domain} | grep -oE '((1?[0-9][0-9]?|2[0-4][0-9]|25[0-5])\.){3}(1?[0-9][0-9]?|2[0-4][0-9]|25[0-5])'`
 	if $?.to_i == 0 
-		puts "Information about #{domain}"
-		allIpAddresses.each_line  do |line|
-			line = line.strip
-			geoInformation = open("http://ip.taobao.com/service/getIpInfo.php?ip=#{line}");
-			json = JSON.parse geoInformation
-			outputResult(json)
-		end
+		# puts "Information about #{domain}"
+		line = allIpAddresses.lines.first
+		line = line.strip
+		geoInformation = open("http://ip.taobao.com/service/getIpInfo.php?ip=#{line}");
+		json = JSON.parse geoInformation
+		outputResult(json)
 	else
 		puts 'Network Error'	
 	end
